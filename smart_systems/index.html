@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shiksha is the GOAT</title>
+</head>
+<body>
+    <h1>You're prolly hungry gorl</h1>
+    <p>No worries ;) we got your back</p>
+    <p>Let's go to Shiksha!!!!</p>
+
+    <button id="btn">Click to see how far you are</button>
+
+    <div id="data" style="display:none;">
+        <p><b>Distance to Shiksha:</b> <span id="dist">---</span></p>
+        <p>Your Latitude: <span id="lat">---</span></p>
+        <p>Your Longitude: <span id="lon">---</span></p>
+    </div>
+
+    <script>
+        const TARGET_LAT = 61.0060;
+        const TARGET_LON = 25.6650;
+
+        const btn = document.getElementById('btn');
+        const dataDiv = document.getElementById('data');
+        const distEl = document.getElementById('dist');
+        const latEl = document.getElementById('lat');
+        const lonEl = document.getElementById('lon');
+
+        btn.addEventListener('click', function() {
+            if (navigator.geolocation) {
+                btn.style.display = 'none';
+                dataDiv.style.display = 'block';
+
+                navigator.geolocation.watchPosition(
+                    function(position) {
+
+                        const myLat = position.coords.latitude;
+                        const myLong = position.coords.longitude;
+
+                        latEl.textContent = myLat;
+                        lonEl.textContent = myLong;
+
+                        //Haversine formula
+                        const R = 6371; 
+                        const dLat = (TARGET_LAT - myLat) * Math.PI / 180;
+                        const dLon = (TARGET_LON - myLong) * Math.PI / 180;
+                        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                                  Math.sin(dLon/2) * Math.sin(dLon/2) * 
+                                  Math.cos(myLat * Math.PI / 180) * Math.cos(TARGET_LAT * Math.PI / 180);
+                        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                        const distanceKm = R * c;
+
+                        if (distanceKm < 1) {
+                            distEl.textContent = Math.round(distanceKm * 1000) + " meters";
+                        } else {
+                            distEl.textContent = distanceKm.toFixed(3) + " km";
+                        }
+                    },
+                    function(error) {
+                        alert("Error: " + error.message);
+                    }
+                );
+            } else {
+                alert("Geolocation not supported by this browser.");
+            }
+        });
+    </script>
+    <style>
+        body {
+            background-image: url('https://shiksha.fi/wp-content/uploads/2025/01/rBG-logo.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: repeat;
+        }
+    </style>
+</body>
+</html>
